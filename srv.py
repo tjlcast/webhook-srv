@@ -13,17 +13,17 @@ def gitlab_webhook():
 
     # 确认事件类型
     if payload.get("ref_type") == "tag":
-        project_name = payload["repository"]["name"]
-        tag_name = payload["ref"].split('/')[-1]
-        repository_path = payload["repository"]["ssh_url"]
-        repo_url = payload["repository"]["html_url"]
+        project_name = payload["repository"]["name"]                        # Ex. logseq-ai-tools
+        tag_name = payload["ref"].split('/')[-1]                            # Ex. v0.0.3
+        repository_path = payload["repository"]["ssh_url"]                  # Ex. git@github.com:tjlcast/logseq-ai-tools.git
+        repo_url = payload["repository"]["html_url"]                        # Ex. https://github.com/tjlcast/logseq-ai-tools, 注意：要与commitno进行组合(例如：https://github.com/tjlcast/logseq-ai-tools/commit/f4af47ca3fdfcf7dae2a1cd83ae3e73a5c1ae3cc)
 
         print(f"New Tag Created: {tag_name} in {project_name}")
 
         try:
-        	subprocess.run(["rm", "-rf", f"{project_name}"], cwd=current_directory, check=True)
+            subprocess.run(["rm", "-rf", f"{project_name}"], cwd=current_directory, check=True)
         except FileNotFoundError as e:
-          print("File not found.")
+            print("File not found.")
         
         # Clone or update the repository locally (for simplicity)
         repo_dir = f"{current_directory}/{project_name}"
