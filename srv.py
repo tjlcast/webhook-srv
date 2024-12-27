@@ -57,7 +57,8 @@ def gitlab_webhook():
         # 获取新 Tag 和前一个 Tag 之间的 Commit 信息
         commits = subprocess.check_output(
 #            ["git", "log", f"{prev_tag}..{tag_name}", "--oneline"],
-		   ["git", "log", f"{prev_tag}..{tag_name}", "--pretty=format:'{\"commit\": \"%H\", \"author\": \"%an\", \"date\": \"%ad\", \"message\": \"%s\"}'", "--date=iso"],
+		    #["git", "log", f"{prev_tag}..{tag_name}", "--pretty=format:'{\"commit\": \"%H\", \"author\": \"%an\", \"date\": \"%ad\", \"message\": \"%s\"}'", "--date=iso"],
+            ["git", "log", f"{prev_tag}..{tag_name}", "--pretty=format:%H tjl %an tjl %ad tjl %s", "--date=iso"],
             cwd=repo_dir,
             universal_newlines=True
         )
@@ -69,8 +70,15 @@ def gitlab_webhook():
         for line in commits.strip().split("\n"):
             # 去掉多余的单引号并解析 JSON 字符串
             line = line.strip("'")
-            commit_dict = json.loads(line)
-            commit_list.append(commit_dict)
+            # commit_dict = json.loads(line)
+            # commit_list.append(commit_dict)
+            commit, author, date, message = line.split(' tjl ')
+            commit_list.append({
+                "commit": commit,
+                "author": author,
+                "date": date,
+                "message": message  
+            })
 
         for commit in commit_list:
             commit_hash = commit['commit']
